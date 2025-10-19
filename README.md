@@ -24,11 +24,12 @@ Absolutely! Let’s make this **LMS project plan extremely detailed**, expanding
 
 ## **Phase 2: Technology Stack Finalization**
 
-* Frontend: **React.js **, Tailwind CSS for styling.
-* Backend: **Node.js + Express.js**
-* Database: **NeonDB (PostgreSQL)**
-* ORM: **Prisma** (for type-safe queries)
-* Authentication: **Neon auth**, optional NextAuth.
+* **Framework**: **Next.js 15** (React 19 with App Router, API Routes for backend)
+* **Styling**: **Tailwind CSS 4**
+* **Database**: **NeonDB (PostgreSQL)**
+* **ORM**: **Prisma** (for type-safe queries)
+* **Authentication**: **NextAuth.js** (Auth.js v5)
+* **Language**: **TypeScript**
 
 ---
 
@@ -44,135 +45,503 @@ Absolutely! Let’s make this **LMS project plan extremely detailed**, expanding
 
 ---
 
-## **Phase 4: Database Schema Design**
+## **Phase 4: Database Schema Design** ✅ COMPLETED
 
-* **Tables & Relations**:
+* **Complete Prisma Schema Implemented** (`prisma/schema.prisma`)
 
-  * Users: id, name, email, password, role
-  * Courses: id, title, description, teacherId
-  * Lessons: id, title, content, courseId
-  * Assignments: id, title, description, dueDate, courseId
-  * Quizzes: id, title, questions, courseId
-  * Grades: id, studentId, assignmentId, score
-* Define **foreign keys** and **one-to-many/many-to-many relationships**.
-* Include **timestamps** for tracking.
+### **9 Core Models with Full Relations**:
+
+#### **Users Table**
+  * `id` (String/CUID), `name`, `email` (unique), `password` (hashed)
+  * `role` (enum: ADMIN, TEACHER, STUDENT), `avatar`, `emailVerified`
+  * `createdAt`, `updatedAt` (timestamps)
+  * **Relations**: taughtCourses, enrollments, assignments, quizAttempts, grades, notifications
+
+#### **Courses Table**
+  * `id`, `title`, `description` (Text), `teacherId` (FK → Users)
+  * `status` (enum: DRAFT, PUBLISHED, ARCHIVED)
+  * `createdAt`, `updatedAt`
+  * **Relations**: teacher, lessons, assignments, quizzes, enrollments
+
+#### **Lessons Table**
+  * `id`, `title`, `content` (Text), `order`, `courseId` (FK → Courses)
+  * `createdAt`, `updatedAt`
+  * **Cascade Delete**: When course deleted
+
+#### **Assignments Table**
+  * `id`, `title`, `description` (Text), `dueDate`, `maxScore`, `courseId` (FK)
+  * `createdAt`, `updatedAt`
+  * **Relations**: submissions, grades
+
+#### **AssignmentSubmissions Table**
+  * `id`, `assignmentId` (FK), `studentId` (FK), `content`, `fileUrl`, `submittedAt`
+  * **Unique Constraint**: (assignmentId, studentId) - one submission per student
+
+#### **Quizzes Table**
+  * `id`, `title`, `description`, `courseId` (FK), `timeLimit` (minutes)
+  * `createdAt`, `updatedAt`
+  * **Relations**: questions, attempts, grades
+
+#### **Questions Table**
+  * `id`, `quizId` (FK), `questionText`, `questionType` (enum), `options` (JSON)
+  * `correctAnswer`, `points`, `order`
+  * **Question Types**: MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER
+
+#### **QuizAttempts Table**
+  * `id`, `quizId` (FK), `studentId` (FK), `answers` (JSON), `score`, `submittedAt`
+
+#### **Enrollments Table**
+  * `id`, `studentId` (FK), `courseId` (FK), `status` (ACTIVE/COMPLETED/DROPPED), `enrolledAt`
+  * **Unique Constraint**: (studentId, courseId) - prevent duplicate enrollments
+
+#### **Grades Table**
+  * `id`, `studentId` (FK), `assignmentId` (FK, optional), `quizId` (FK, optional)
+  * `score`, `maxScore`, `feedback`, `gradedAt`
+
+#### **Notifications Table**
+  * `id`, `userId` (FK), `message`, `type` (enum), `isRead`, `createdAt`
+  * **Types**: ENROLLMENT, ASSIGNMENT_DUE, GRADE_POSTED, COURSE_UPDATE, GENERAL
+
+### **Key Schema Features**:
+* ✅ All **foreign keys** defined with proper cascade behavior
+* ✅ **One-to-many** relationships (User → Courses, Course → Lessons)
+* ✅ **Many-to-many** relationships (User ↔ Course via Enrollments)
+* ✅ **Timestamps** (`createdAt`, `updatedAt`) on all tables
+* ✅ **Unique constraints** for data integrity
+* ✅ **Enums** for type safety (Role, CourseStatus, EnrollmentStatus, QuestionType, NotificationType)
+* ✅ **JSON fields** for flexible data (quiz answers, question options)
+* ✅ **Text fields** for long content (descriptions, lesson content, feedback)
+* ✅ **Cascade deletes** configured for referential integrity
 
 ---
 
-## **Phase 5: NeonDB Setup**
+## **Phase 5: NeonDB Setup** ✅ COMPLETED
 
-* Create **NeonDB cloud account**.
-* Launch new **PostgreSQL database instance**.
-* Configure **database credentials**: host, port, username, password, database name.
-* Enable **connection from backend** and optionally set read/write replicas for scaling.
+**NeonDB Database Configured**:
+* ✅ Database instance created on NeonDB
+* ✅ Region: `ap-southeast-1` (Asia Pacific - Singapore)
+* ✅ Connection string configured in `.env`
+* ✅ SSL mode enabled (`sslmode=require`)
+* ✅ Connection pooling enabled (pooler endpoint)
+
+**Database Details**:
+* **Host**: `ep-royal-dawn-a1iid7pb-pooler.ap-southeast-1.aws.neon.tech`
+* **Database**: `neondb`
+* **SSL**: Required
+* **Pooling**: Enabled (serverless-optimized)
+
+**Configuration Complete**:
+* ✅ Prisma connected to NeonDB (PostgreSQL)
+* ✅ `.env` file configured with `DATABASE_URL`
+* ✅ `NEXTAUTH_URL` and `NEXTAUTH_SECRET` set
+* ✅ Secure connection established
+* ✅ Database ready for migrations
+
+**Verification**:
+* ✅ Connection tested successfully
+* ✅ Tables created and populated
+* ✅ Sample data seeded
+* ✅ Prisma Studio accessible
 
 ---
 
-## **Phase 6: Initialize Backend Project**
+## **Phase 6: Initialize Backend Project** ✅ COMPLETED (Next.js Integrated)
 
-* `npm init -y`
-* Install dependencies:
+**Note**: Using **Next.js App Router** instead of separate Express backend
 
-  ```bash
-  npm install express prisma @prisma/client dotenv bcrypt jsonwebtoken cors
-  ```
-* Setup folder structure:
+**Installed Dependencies**:
+* ✅ `prisma` & `@prisma/client` - Database ORM
+* ✅ `next-auth@beta` - Authentication (v5)
+* ✅ `bcryptjs` - Password hashing
+* ✅ `zod` - Schema validation
+* ✅ `tsx` - TypeScript execution
 
-  ```
-  /controllers
-  /routes
-  /middlewares
-  /services
-  /utils
-  server.js
-  ```
-* Setup `.env` for NeonDB credentials.
+**Project Structure Created**:
+```
+app/
+  api/
+    auth/[...nextauth]/    # Authentication endpoints
+lib/
+  auth.ts                   # NextAuth configuration
+  prisma.ts                 # Prisma client singleton
+types/
+  next-auth.d.ts           # TypeScript definitions
+prisma/
+  schema.prisma            # Database schema
+  seed.ts                  # Database seeding
+middleware.ts             # Route protection
+```
+
+**Environment Setup**:
+* ✅ `.env.example` template provided
+* ✅ `.env` configured for NeonDB and NextAuth
 
 ---
 
-## **Phase 7: Prisma ORM Setup**
+## **Phase 7: Prisma ORM Setup** ✅ COMPLETED
 
-* `npx prisma init` → generates `prisma/schema.prisma`
-* Connect Prisma to NeonDB using:
+* ✅ `npx prisma init` executed
+* ✅ `prisma/schema.prisma` created with complete schema
+* ✅ Connected to NeonDB via `DATABASE_URL` in `.env`
+* ✅ **9 models defined** with full relationships:
+  - User, Course, Lesson, Assignment, Quiz, Question
+  - AssignmentSubmission, QuizAttempt, Enrollment, Grade, Notification
 
-  ```env
-  DATABASE_URL="postgresql://username:password@host:port/dbname"
-  ```
-* Define Prisma models corresponding to database schema.
-* Example:
+**Features Implemented**:
+* ✅ Type-safe CUID primary keys
+* ✅ Enums (Role, CourseStatus, EnrollmentStatus, QuestionType, NotificationType)
+* ✅ Foreign key relationships with cascade deletes
+* ✅ Unique constraints for data integrity
+* ✅ JSON fields for flexible data (quiz answers, options)
+* ✅ Timestamps on all tables
+* ✅ Optimized indexes
 
-  ```prisma
-  model User {
-    id        Int     @id @default(autoincrement())
-    name      String
-    email     String  @unique
-    password  String
-    role      String
-    courses   Course[]
+**Generated Files**:
+* ✅ `lib/prisma.ts` - Singleton Prisma client
+* ✅ `prisma/seed.ts` - Sample data seeding
+* ✅ Full TypeScript types auto-generated
+
+**Documentation Created**:
+* 📄 `DATABASE_SCHEMA.md` - Visual ER diagram
+* 📄 `PRISMA_REFERENCE.md` - Query examples & best practices
+
+---
+
+## **Phase 8: Database Migration & Seeding** ✅ COMPLETED
+
+**Migration Created**: `20251019012410_init`
+
+**All Commands Executed Successfully**:
+```powershell
+✅ npm run prisma:generate  # Prisma Client generated
+✅ npm run prisma:migrate   # Database tables created
+✅ npm run prisma:seed      # Sample data added
+```
+
+**Database Tables Created** (11 tables):
+* ✅ `users` - User accounts with roles
+* ✅ `courses` - Course catalog
+* ✅ `lessons` - Course lessons
+* ✅ `assignments` - Course assignments
+* ✅ `assignment_submissions` - Student submissions
+* ✅ `quizzes` - Quiz catalog
+* ✅ `questions` - Quiz questions
+* ✅ `quiz_attempts` - Student quiz attempts
+* ✅ `enrollments` - Student-course enrollments
+* ✅ `grades` - Assignment and quiz grades
+* ✅ `notifications` - User notifications
+
+**Sample Data Created**:
+* 👤 **3 Test Users**:
+  - Admin: `admin@lms.com` / `admin123`
+  - Teacher: `teacher@lms.com` / `teacher123`
+  - Student: `student@lms.com` / `student123`
+* 📚 **1 Sample Course**: "Introduction to Web Development"
+* 📖 **2 Lessons**: HTML Basics, CSS Styling
+* 📝 **1 Assignment**: "Build Your First Web Page" (due in 7 days)
+* ❓ **1 Quiz**: "HTML Fundamentals Quiz" (2 questions, 30 min limit)
+* ✅ **1 Enrollment**: Student enrolled in course
+
+**Verification Tools**:
+```powershell
+# Open Prisma Studio (visual database editor)
+npm run prisma:studio
+# Available at: http://localhost:5555
+
+# Check migration status
+npx prisma migrate status
+
+# View database directly in NeonDB console
+# https://console.neon.tech
+```
+
+**Database Features Verified**:
+* ✅ All foreign key relationships working
+* ✅ Cascade deletes configured
+* ✅ Unique constraints enforced
+* ✅ Enums properly created
+* ✅ JSON fields operational
+* ✅ Timestamps auto-populated
+* ✅ Default values applied
+
+---
+
+## **Phase 9: Authentication & Authorization** ✅ COMPLETED
+
+**NextAuth.js v5 Implementation**:
+* ✅ `lib/auth.ts` - Complete NextAuth configuration
+* ✅ Credentials provider with email/password
+* ✅ Password hashing with **bcryptjs**
+* ✅ JWT session strategy
+* ✅ Role-based access in session (Admin/Teacher/Student)
+
+**API Routes Created**:
+* ✅ `app/api/auth/[...nextauth]/route.ts`
+  - `/api/auth/signin` - Login
+  - `/api/auth/signout` - Logout
+  - `/api/auth/session` - Get current session
+
+**Middleware Protection**:
+* ✅ `middleware.ts` - Route protection
+  - Redirects unauthenticated users to login
+  - Prevents authenticated users from accessing login page
+  - Protects `/dashboard`, `/courses`, `/profile` routes
+
+**Type Safety**:
+* ✅ `types/next-auth.d.ts` - Extended session types
+  - User ID, role, email available in session
+  - Full TypeScript support
+
+**Security Features**:
+* ✅ Passwords hashed with bcrypt (10 rounds)
+* ✅ JWT tokens with secure secrets
+* ✅ CSRF protection built-in
+* ✅ Secure session cookies
+* ✅ Input validation with Zod
+
+**Usage Example**:
+```typescript
+import { auth } from '@/lib/auth'
+
+// In Server Component
+const session = await auth()
+if (!session) redirect('/login')
+
+// In API Route
+const session = await auth()
+if (session.user.role !== 'ADMIN') {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+}
+```
+
+---
+
+## **Phase 10: Base API Structure** ✅ COMPLETED
+
+### **REST API Endpoints Implemented**:
+
+#### **User Management** (`/api/users`) - Admin Only
+* ✅ `GET /api/users` - List all users with pagination, filtering, search
+* ✅ `GET /api/users/[id]` - Get user details with courses and enrollments
+* ✅ `POST /api/users` - Create new user
+* ✅ `PATCH /api/users/[id]` - Update user information
+* ✅ `DELETE /api/users/[id]` - Delete user (with cascade)
+
+#### **Course Management** (`/api/courses`)
+* ✅ `GET /api/courses` - List courses (role-based filtering)
+* ✅ `GET /api/courses/[id]` - Get course with lessons, assignments, quizzes
+* ✅ `POST /api/courses` - Create course (Teacher/Admin)
+* ✅ `PATCH /api/courses/[id]` - Update course (Teacher/Admin)
+* ✅ `DELETE /api/courses/[id]` - Delete course (Teacher/Admin)
+
+#### **Lesson Management** (`/api/lessons`)
+* ✅ `GET /api/lessons?courseId={id}` - Get all lessons for a course
+* ✅ `GET /api/lessons/[id]` - Get lesson details
+* ✅ `POST /api/lessons` - Create lesson (Teacher/Admin)
+* ✅ `PATCH /api/lessons/[id]` - Update lesson (Teacher/Admin)
+* ✅ `DELETE /api/lessons/[id]` - Delete lesson (Teacher/Admin)
+
+#### **Assignment Management** (`/api/assignments`)
+* ✅ `GET /api/assignments?courseId={id}` - Get assignments with submission counts
+* ✅ `GET /api/assignments/[id]` - Get assignment with submissions
+* ✅ `POST /api/assignments` - Create assignment (Teacher/Admin)
+* ✅ `PATCH /api/assignments/[id]` - Update assignment (Teacher/Admin)
+* ✅ `DELETE /api/assignments/[id]` - Delete assignment (Teacher/Admin)
+
+#### **Enrollment Management** (`/api/enrollments`)
+* ✅ `GET /api/enrollments` - Get user's enrolled courses
+* ✅ `POST /api/enrollments` - Enroll in course (with notifications)
+
+#### **Grades API** (`/api/grades`)
+* ✅ `GET /api/grades?studentId={id}` - Get grades with statistics
+
+### **Features Implemented**:
+
+#### **Error Handling System**
+* ✅ `lib/api-response.ts` - Centralized response handler
+  - Success responses (200, 201)
+  - Error responses (400, 401, 403, 404, 422, 500)
+  - Consistent JSON format
+
+#### **Authentication & Authorization**
+* ✅ `lib/api-middleware.ts` - Auth middleware functions
+  - `withAuth()` - Require authentication
+  - `requireRole()` - Role-based access control
+  - `requireAdmin()` - Admin-only access
+  - `requireTeacherOrAdmin()` - Teacher/Admin access
+
+#### **Input Validation** (Zod Schemas)
+* ✅ `lib/validations/user.ts` - User validation
+* ✅ `lib/validations/course.ts` - Course validation
+* ✅ `lib/validations/lesson.ts` - Lesson validation
+* ✅ `lib/validations/assignment.ts` - Assignment validation
+
+#### **Advanced Features**
+* ✅ **Pagination** - Page and limit support on list endpoints
+* ✅ **Search & Filters** - Role, status, teacher, search queries
+* ✅ **Role-Based Access Control**:
+  - Admin: Full access to all resources
+  - Teacher: Manage own courses, lessons, assignments
+  - Student: View published courses, submit assignments
+* ✅ **Data Relationships** - Include related data in responses
+* ✅ **Automatic Notifications** - Created on enrollment
+* ✅ **Statistics** - Grade averages and counts
+
+### **API Response Format**:
+
+**Success:**
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+**Error:**
+```json
+{
+  "success": false,
+  "error": "Error message",
+  "errors": { ... }
+}
+```
+
+**Paginated:**
+```json
+{
+  "success": true,
+  "data": {
+    "items": [...],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 50,
+      "totalPages": 5
+    }
   }
-  ```
+}
+```
+
+### **Testing Documentation**:
+* 📄 `API_TESTING_GUIDE.md` - Complete API testing guide
+  - All endpoint examples
+  - Request/response formats
+  - Role-based access control table
+  - Testing checklist
+  - Thunder Client / Postman setup
+
+### **Security Features**:
+* ✅ JWT-based authentication required
+* ✅ Role-based authorization on all endpoints
+* ✅ Input validation with Zod schemas
+* ✅ Protection against unauthorized access
+* ✅ Owners can only modify their own resources
+* ✅ Students restricted to published content
+
+### **Ready for Testing**:
+```powershell
+# Server is running at
+http://localhost:3000
+
+# Test with credentials:
+# Admin: admin@lms.com / admin123
+# Teacher: teacher@lms.com / teacher123
+# Student: student@lms.com / student123
+```
 
 ---
 
-## **Phase 8: Database Migration & Seeding**
+## **Phase 11: Frontend Project Initialization** ✅ COMPLETED
 
-* Run migration:
+**Note**: Using **Next.js App Router** for frontend - no separate Vite project needed!
 
-  ```bash
-  npx prisma migrate dev --name init
-  ```
-* Verify tables in NeonDB.
-* Seed initial test data (admin user, sample courses).
+### **UI Libraries Installed**:
+* ✅ **shadcn/ui** - Component library built on Radix UI
+* ✅ **Lucide React** - Icon library
+* ✅ **React Hook Form** - Form handling
+* ✅ **date-fns** - Date formatting
+* ✅ **clsx** & **tailwind-merge** - Utility classes
 
----
+### **Project Structure Created**:
+```
+app/
+  (auth)/
+    login/              # Login page
+    signup/             # Signup page
+  (dashboard)/
+    layout.tsx          # Dashboard layout with sidebar
+    dashboard/          # Admin/Teacher/Student dashboard
+    courses/            # Course management
+    lessons/            # Lesson management
+    assignments/        # Assignment management
+    grades/             # Grades view
+    profile/            # User profile
+  layout.tsx            # Root layout
+  page.tsx              # Landing page
+  
+components/
+  ui/                   # shadcn/ui components
+    button.tsx
+    card.tsx
+    input.tsx
+    table.tsx
+    dialog.tsx
+    etc.
+  layout/
+    sidebar.tsx         # Navigation sidebar
+    header.tsx          # Top navigation
+    user-menu.tsx       # User dropdown
+  forms/
+    login-form.tsx
+    course-form.tsx
+    etc.
+  
+lib/
+  utils.ts              # Utility functions
+  api-client.ts         # API call helpers
+  
+hooks/
+  use-user.ts           # User session hook
+  use-courses.ts        # Course data hook
+```
 
-## **Phase 9: Authentication & Authorization**
+### **Routing Configured** (Next.js App Router):
+* ✅ `/` - Landing page
+* ✅ `/login` - Login page
+* ✅ `/signup` - Registration page
+* ✅ `/dashboard` - Role-based dashboard
+* ✅ `/dashboard/courses` - Course list
+* ✅ `/dashboard/courses/[id]` - Course details
+* ✅ `/dashboard/lessons` - Lesson management
+* ✅ `/dashboard/assignments` - Assignment management
+* ✅ `/dashboard/grades` - Grades view
+* ✅ `/dashboard/profile` - User profile
 
-* Implement **signup/login** endpoints.
-* Hash passwords with **bcrypt**.
-* Generate JWT tokens on login.
-* Middleware to verify JWT and extract user role.
-* Protect routes based on roles.
+### **Features Implemented**:
+* ✅ **Route Groups** - Organized by auth and dashboard
+* ✅ **Layouts** - Shared layouts for dashboard pages
+* ✅ **Protected Routes** - Middleware-based authentication
+* ✅ **Role-Based UI** - Different views for Admin/Teacher/Student
+* ✅ **Responsive Design** - Mobile-first with Tailwind CSS
+* ✅ **Dark Mode Support** - Theme provider configured
+* ✅ **Loading States** - Suspense and loading.tsx files
+* ✅ **Error Boundaries** - error.tsx files for error handling
 
----
+### **API Integration**:
+* ✅ **Server Components** - Fetch data on server
+* ✅ **Client Components** - Interactive UI elements
+* ✅ **Server Actions** - Form submissions
+* ✅ **API Routes** - Already implemented in Phase 10
 
-## **Phase 10: Base API Structure**
+### **Form Handling**:
+* ✅ **React Hook Form** - Form state management
+* ✅ **Zod Validation** - Client-side validation
+* ✅ **Error Messages** - User-friendly error display
 
-* REST API endpoints:
-
-  ```
-  /api/users       -> CRUD users
-  /api/courses     -> CRUD courses
-  /api/lessons     -> CRUD lessons
-  /api/assignments -> CRUD assignments
-  /api/quizzes     -> CRUD quizzes
-  /api/grades      -> CRUD grades
-  ```
-* Setup **error handling middleware**.
-* Test APIs using **Postman**.
-
----
-
-## **Phase 11: Frontend Project Initialization**
-
-* `npm create vite@latest lms-frontend`
-* Install React Router & Axios:
-
-  ```bash
-  npm install react-router-dom axios
-  ```
-* Folder structure:
-
-  ```
-  /components
-  /pages
-  /services
-  /utils
-  /context
-  ```
-* Configure routing for:
-
-  * `/login`, `/signup`, `/dashboard`, `/courses`, `/lessons`, `/assignments`.
+### **State Management**:
+* ✅ **React Server Components** - Server-side data fetching
+* ✅ **Client State** - useState for UI state
+* ✅ **Session Context** - NextAuth session provider
 
 ---
 
