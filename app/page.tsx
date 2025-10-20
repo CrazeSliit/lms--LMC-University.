@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { BookOpen, Users, GraduationCap, Award, Facebook, Twitter, Instagram, Linkedin, Star, Sparkles, X, Mail, MapPin, Briefcase, Trophy } from 'lucide-react'
+import { BookOpen, Users, GraduationCap, Award, Facebook, Twitter, Instagram, Linkedin, Star, Sparkles, X, Mail, MapPin, Briefcase, Trophy, Phone, Send, MessageSquare, Clock } from 'lucide-react'
 
 interface Instructor {
   id: number
@@ -125,6 +125,13 @@ const instructorsData: Instructor[] = [
 export default function Home() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null)
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+  const [formSubmitted, setFormSubmitted] = useState(false)
   
   const benefitImages = [
     'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
@@ -148,6 +155,15 @@ export default function Home() {
       document.body.style.overflow = 'unset'
     }
   }, [selectedInstructor])
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setFormSubmitted(true)
+    setTimeout(() => {
+      setFormSubmitted(false)
+      setContactForm({ name: '', email: '', subject: '', message: '' })
+    }, 3000)
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
@@ -766,6 +782,228 @@ export default function Home() {
                 Explore Courses
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 py-20">
+        <div className="container mx-auto px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-foreground mb-4">
+              Get in <span className="text-primary">Touch</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Contact Information */}
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-2xl font-bold text-foreground mb-6">Contact Information</h3>
+                <p className="text-muted-foreground mb-8">
+                  Fill out the form and our team will get back to you within 24 hours.
+                </p>
+              </div>
+
+              {/* Contact Cards */}
+              <div className="space-y-4">
+                <div className="bg-white rounded-2xl p-6 border border-border hover:shadow-lg transition-all group">
+                  <div className="flex items-start gap-4">
+                    <div className="h-14 w-14 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-primary transition-colors">
+                      <Phone className="h-7 w-7 text-blue-600 group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground mb-1">Phone</h4>
+                      <p className="text-muted-foreground text-sm mb-2">Mon-Fri from 8am to 5pm</p>
+                      <a href="tel:+1234567890" className="text-primary font-semibold hover:underline">
+                        +1 (234) 567-890
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-border hover:shadow-lg transition-all group">
+                  <div className="flex items-start gap-4">
+                    <div className="h-14 w-14 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                      <Mail className="h-7 w-7 text-green-600 group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground mb-1">Email</h4>
+                      <p className="text-muted-foreground text-sm mb-2">Our friendly team is here to help</p>
+                      <a href="mailto:support@lmc.edu" className="text-primary font-semibold hover:underline">
+                        support@lmc.edu
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-border hover:shadow-lg transition-all group">
+                  <div className="flex items-start gap-4">
+                    <div className="h-14 w-14 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-500 transition-colors">
+                      <MapPin className="h-7 w-7 text-purple-600 group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground mb-1">Office</h4>
+                      <p className="text-muted-foreground text-sm mb-2">Come say hello at our office</p>
+                      <p className="text-foreground font-medium">
+                        123 Learning Street<br />
+                        Education City, EC 12345
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-border hover:shadow-lg transition-all group">
+                  <div className="flex items-start gap-4">
+                    <div className="h-14 w-14 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-500 transition-colors">
+                      <Clock className="h-7 w-7 text-orange-600 group-hover:text-white transition-colors" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground mb-1">Working Hours</h4>
+                      <p className="text-muted-foreground text-sm mb-2">Monday - Friday</p>
+                      <p className="text-foreground font-medium">
+                        8:00 AM - 5:00 PM EST
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Media */}
+              <div>
+                <h4 className="font-bold text-foreground mb-4">Follow Us</h4>
+                <div className="flex gap-3">
+                  <a href="#" className="flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-border text-muted-foreground hover:border-primary hover:bg-primary hover:text-white transition-all">
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-border text-muted-foreground hover:border-primary hover:bg-primary hover:text-white transition-all">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-border text-muted-foreground hover:border-primary hover:bg-primary hover:text-white transition-all">
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="flex h-12 w-12 items-center justify-center rounded-full bg-white border-2 border-border text-muted-foreground hover:border-primary hover:bg-primary hover:text-white transition-all">
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Form */}
+            <div className="bg-white rounded-3xl p-8 border-2 border-border shadow-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <MessageSquare className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-foreground">Send us a Message</h3>
+                  <p className="text-sm text-muted-foreground">We&apos;ll get back to you soon</p>
+                </div>
+              </div>
+
+              {formSubmitted ? (
+                <div className="py-12 text-center">
+                  <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="h-10 w-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h4 className="text-2xl font-bold text-foreground mb-2">Message Sent!</h4>
+                  <p className="text-muted-foreground">Thank you for contacting us. We&apos;ll respond within 24 hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleContactSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-semibold text-foreground mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      required
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      required
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="subject" className="block text-sm font-semibold text-foreground mb-2">
+                      Subject *
+                    </label>
+                    <input
+                      type="text"
+                      id="subject"
+                      required
+                      value={contactForm.subject}
+                      onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
+                      placeholder="How can we help?"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-semibold text-foreground mb-2">
+                      Message *
+                    </label>
+                    <textarea
+                      id="message"
+                      required
+                      rows={6}
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors resize-none"
+                      placeholder="Tell us more about your inquiry..."
+                    />
+                  </div>
+
+                  <Button type="submit" size="lg" className="w-full rounded-xl gap-2 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all">
+                    <Send className="h-5 w-5" />
+                    Send Message
+                  </Button>
+                </form>
+              )}
+            </div>
+          </div>
+
+          {/* Map or Additional Info */}
+          <div className="mt-16 bg-white rounded-3xl p-8 border-2 border-border shadow-xl">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-foreground mb-2">Visit Our Campus</h3>
+              <p className="text-muted-foreground">We&apos;re conveniently located in the heart of Education City</p>
+            </div>
+            <div className="relative h-96 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
+              <img 
+                src="https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=600&fit=crop" 
+                alt="Campus Location"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center pb-8">
+                <Button size="lg" className="rounded-full shadow-lg">
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Get Directions
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
