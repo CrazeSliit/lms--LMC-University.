@@ -3,10 +3,128 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { BookOpen, Users, GraduationCap, Award, Facebook, Twitter, Instagram, Linkedin, Star, Sparkles } from 'lucide-react'
+import { BookOpen, Users, GraduationCap, Award, Facebook, Twitter, Instagram, Linkedin, Star, Sparkles, X, Mail, MapPin, Briefcase, Trophy } from 'lucide-react'
+
+interface Instructor {
+  id: number
+  name: string
+  title: string
+  description: string
+  image: string
+  rating: number
+  courses: number
+  students: string
+  bio: string
+  expertise: string[]
+  education: string[]
+  achievements: string[]
+  email: string
+  location: string
+}
+
+const instructorsData: Instructor[] = [
+  {
+    id: 1,
+    name: 'Dr. Sarah Johnson',
+    title: 'Data Science & AI Specialist',
+    description: 'PhD in Computer Science with 15+ years of experience in machine learning and data analytics.',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=500&fit=crop&crop=faces',
+    rating: 4.9,
+    courses: 24,
+    students: '12K',
+    bio: 'Dr. Sarah Johnson is a renowned data scientist and AI researcher with a passion for making complex concepts accessible to students. She has worked with leading tech companies including Google and Microsoft, developing cutting-edge machine learning solutions. Her teaching style focuses on practical, hands-on learning with real-world applications.',
+    expertise: ['Machine Learning', 'Deep Learning', 'Data Analytics', 'Python', 'TensorFlow', 'Neural Networks'],
+    education: [
+      'PhD in Computer Science - Stanford University',
+      'MSc in Artificial Intelligence - MIT',
+      'BSc in Mathematics - UC Berkeley'
+    ],
+    achievements: [
+      'Published 50+ research papers in top-tier journals',
+      'Speaker at Google I/O and AWS re:Invent',
+      'Winner of Best Data Science Educator Award 2024',
+      'Developed AI curriculum used by 100+ universities'
+    ],
+    email: 'sarah.johnson@lmc.edu',
+    location: 'San Francisco, CA'
+  },
+  {
+    id: 2,
+    name: 'Prof. Michael Chen',
+    title: 'Web Development Expert',
+    description: 'Full-stack developer with expertise in React, Node.js, and modern web technologies.',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=500&fit=crop&crop=faces',
+    rating: 4.8,
+    courses: 18,
+    students: '15K',
+    bio: 'Professor Michael Chen is a seasoned full-stack developer and educator with over 12 years of industry experience. He has built enterprise applications for Fortune 500 companies and led development teams at major startups. Michael is known for his engaging teaching style and ability to simplify complex web development concepts.',
+    expertise: ['React.js', 'Node.js', 'JavaScript', 'TypeScript', 'Next.js', 'MongoDB', 'GraphQL'],
+    education: [
+      'MSc in Software Engineering - Carnegie Mellon University',
+      'BSc in Computer Science - University of Washington'
+    ],
+    achievements: [
+      'Lead developer on 100+ production web applications',
+      'Author of "Modern Web Development" bestselling book',
+      'Contributing member to React.js open source community',
+      'Mentor to 500+ developers through coding bootcamps'
+    ],
+    email: 'michael.chen@lmc.edu',
+    location: 'Seattle, WA'
+  },
+  {
+    id: 3,
+    name: 'Emily Rodriguez',
+    title: 'UX/UI Design Lead',
+    description: 'Award-winning designer specializing in user experience and interface design principles.',
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=500&fit=crop&crop=faces',
+    rating: 5.0,
+    courses: 16,
+    students: '9K',
+    bio: 'Emily Rodriguez is an internationally recognized UX/UI designer with a keen eye for creating intuitive and beautiful digital experiences. She has led design teams at Apple and Airbnb, crafting products used by millions. Emily believes in design thinking and user-centered approaches to solve real problems.',
+    expertise: ['User Experience Design', 'UI Design', 'Figma', 'Adobe Creative Suite', 'Design Systems', 'Prototyping'],
+    education: [
+      'MA in Interaction Design - Royal College of Art',
+      'BFA in Graphic Design - Rhode Island School of Design'
+    ],
+    achievements: [
+      'Winner of 3 Red Dot Design Awards',
+      'Featured designer in Forbes 30 Under 30',
+      'Created design systems for Fortune 100 companies',
+      'International speaker at Adobe MAX and Figma Config'
+    ],
+    email: 'emily.rodriguez@lmc.edu',
+    location: 'New York, NY'
+  },
+  {
+    id: 4,
+    name: 'David Thompson',
+    title: 'Digital Marketing Guru',
+    description: 'Marketing strategist with proven track record in SEO, social media, and content marketing.',
+    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=500&fit=crop&crop=faces',
+    rating: 4.9,
+    courses: 22,
+    students: '18K',
+    bio: 'David Thompson is a digital marketing pioneer who has helped hundreds of businesses scale their online presence. With expertise spanning SEO, content marketing, and social media strategy, David has worked with brands like Nike, Coca-Cola, and Amazon. He combines data-driven insights with creative storytelling.',
+    expertise: ['SEO', 'Content Marketing', 'Social Media Strategy', 'Google Analytics', 'PPC Advertising', 'Marketing Automation'],
+    education: [
+      'MBA in Marketing - Harvard Business School',
+      'BSc in Business Administration - University of Pennsylvania'
+    ],
+    achievements: [
+      'Grew startup from 0 to $10M revenue through digital marketing',
+      'Certified Google Analytics & AdWords Expert',
+      'Author of "Digital Marketing Mastery" with 100K+ copies sold',
+      'Featured marketing expert on Forbes and Entrepreneur'
+    ],
+    email: 'david.thompson@lmc.edu',
+    location: 'Los Angeles, CA'
+  }
+]
 
 export default function Home() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null)
   
   const benefitImages = [
     'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
@@ -22,6 +140,15 @@ export default function Home() {
 
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    if (selectedInstructor) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+  }, [selectedInstructor])
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20">
       {/* Header */}
@@ -165,13 +292,6 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Carousel Dots */}
-              <div className="mt-8 flex items-center justify-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-foreground" />
-                <div className="h-3 w-3 rounded-full bg-primary" />
-                <div className="h-3 w-3 rounded-full bg-foreground" />
               </div>
             </div>
           </div>
@@ -473,6 +593,94 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Instructors Section */}
+      <section id="instructors" className="bg-white py-20">
+        <div className="container mx-auto px-8">
+          <h2 className="mb-4 text-center text-4xl font-bold text-foreground">
+            Meet Our Expert <span className="text-primary">Instructors</span>
+          </h2>
+          <p className="mx-auto mb-16 max-w-2xl text-center text-lg text-muted-foreground">
+            Learn from industry professionals with years of real-world experience and a passion for teaching
+          </p>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {instructorsData.map((instructor) => (
+              <div 
+                key={instructor.id}
+                onClick={() => setSelectedInstructor(instructor)}
+                className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl overflow-hidden border border-border hover:shadow-2xl transition-all duration-300 cursor-pointer"
+              >
+                <div className={`relative h-72 overflow-hidden ${
+                  instructor.id === 1 ? 'bg-gradient-to-br from-blue-100 to-purple-100' :
+                  instructor.id === 2 ? 'bg-gradient-to-br from-green-100 to-blue-100' :
+                  instructor.id === 3 ? 'bg-gradient-to-br from-purple-100 to-pink-100' :
+                  'bg-gradient-to-br from-orange-100 to-red-100'
+                }`}>
+                  <img 
+                    src={instructor.image}
+                    alt={instructor.name}
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button className="rounded-full px-6 shadow-lg">View Profile</Button>
+                  </div>
+                </div>
+                <div className="p-6 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-foreground">{instructor.name}</h3>
+                    <div className="flex gap-1 text-yellow-400 text-sm">
+                      ★ {instructor.rating}
+                    </div>
+                  </div>
+                  <p className="text-primary font-semibold text-sm">{instructor.title}</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {instructor.description}
+                  </p>
+                  <div className="flex items-center gap-3 pt-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <BookOpen className="h-4 w-4" />
+                      <span>{instructor.courses} Courses</span>
+                    </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      <span>{instructor.students} Students</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-3">
+                    <a href="#" onClick={(e) => e.stopPropagation()} className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors">
+                      <Linkedin className="h-4 w-4" />
+                    </a>
+                    <a href="#" onClick={(e) => e.stopPropagation()} className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors">
+                      <Twitter className="h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Additional Instructor Highlights */}
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
+            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl">
+              <div className="text-5xl font-bold text-primary mb-2">500+</div>
+              <div className="text-lg font-semibold text-foreground mb-1">Expert Instructors</div>
+              <p className="text-sm text-muted-foreground">Industry professionals from top companies</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl">
+              <div className="text-5xl font-bold text-primary mb-2">95%</div>
+              <div className="text-lg font-semibold text-foreground mb-1">Satisfaction Rate</div>
+              <p className="text-sm text-muted-foreground">Students love our teaching methods</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl">
+              <div className="text-5xl font-bold text-primary mb-2">20+</div>
+              <div className="text-lg font-semibold text-foreground mb-1">Years Combined</div>
+              <p className="text-sm text-muted-foreground">Teaching experience across all instructors</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials Section */}
       <section className="bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 py-20">
         <div className="container mx-auto px-8">
@@ -587,6 +795,162 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Instructor Detail Modal */}
+      {selectedInstructor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300">
+            {/* Modal Header */}
+            <div className="relative h-64 bg-gradient-to-br from-primary via-purple-600 to-blue-600">
+              <button
+                onClick={() => setSelectedInstructor(null)}
+                className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 to-transparent">
+                <div className="flex items-end gap-6">
+                  <img
+                    src={selectedInstructor.image}
+                    alt={selectedInstructor.name}
+                    className="h-32 w-32 rounded-2xl border-4 border-white shadow-xl object-cover"
+                  />
+                  <div className="flex-1 text-white pb-2">
+                    <h2 className="text-3xl font-bold mb-2">{selectedInstructor.name}</h2>
+                    <p className="text-lg text-white/90 mb-2">{selectedInstructor.title}</p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-semibold">{selectedInstructor.rating}</span>
+                        <span className="text-white/80">Rating</span>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center gap-1">
+                        <BookOpen className="h-4 w-4" />
+                        <span>{selectedInstructor.courses} Courses</span>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        <span>{selectedInstructor.students} Students</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-8 space-y-8">
+              {/* Contact Info */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
+                  <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Email</p>
+                    <p className="font-semibold text-foreground">{selectedInstructor.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
+                  <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <MapPin className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Location</p>
+                    <p className="font-semibold text-foreground">{selectedInstructor.location}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Biography */}
+              <div>
+                <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Briefcase className="h-6 w-6 text-primary" />
+                  About
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">{selectedInstructor.bio}</p>
+              </div>
+
+              {/* Expertise */}
+              <div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">Areas of Expertise</h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedInstructor.expertise.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium hover:bg-primary hover:text-white transition-colors"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Education */}
+              <div>
+                <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <GraduationCap className="h-6 w-6 text-primary" />
+                  Education
+                </h3>
+                <div className="space-y-3">
+                  {selectedInstructor.education.map((edu, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="h-2 w-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <p className="text-muted-foreground">{edu}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Achievements */}
+              <div>
+                <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Trophy className="h-6 w-6 text-primary" />
+                  Key Achievements
+                </h3>
+                <div className="space-y-3">
+                  {selectedInstructor.achievements.map((achievement, index) => (
+                    <div key={index} className="flex items-start gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
+                      <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-white text-xs font-bold">✓</span>
+                      </div>
+                      <p className="text-foreground font-medium">{achievement}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Social Links & CTA */}
+              <div className="flex items-center justify-between pt-6 border-t border-border">
+                <div className="flex gap-3">
+                  <a href="#" className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors">
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors">
+                    <Mail className="h-5 w-5" />
+                  </a>
+                </div>
+                <div className="flex gap-3">
+                  <Button variant="outline" size="lg" className="rounded-full">
+                    View Courses
+                  </Button>
+                  <Link href="/login">
+                    <Button size="lg" className="rounded-full shadow-lg shadow-primary/25">
+                      Enroll Now
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

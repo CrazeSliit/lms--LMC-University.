@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #0f1419;
@@ -162,7 +164,14 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

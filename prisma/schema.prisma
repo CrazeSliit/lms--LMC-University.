@@ -12,15 +12,28 @@ datasource db {
 
 // User model with role-based access
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  password      String
-  role          Role      @default(STUDENT)
-  avatar        String?
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  password       String
+  role           Role      @default(STUDENT)
+  avatar         String?
+  emailVerified  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  // Profile fields
+  bio            String?   @db.Text
+  phone          String?
+  address        String?
+  
+  // Teacher-specific fields
+  department     String?
+  expertise      String?
+  
+  // Student-specific fields
+  studentId      String?   @unique
+  enrollmentYear String?
 
   // Relations
   taughtCourses Course[]               @relation("TeacherCourses")
