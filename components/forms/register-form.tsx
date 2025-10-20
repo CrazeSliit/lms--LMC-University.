@@ -1,39 +1,72 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
-export function LoginForm() {
+export function RegisterForm() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: 'STUDENT', // Default role
+        }),
       })
 
-      if (result?.error) {
-        setError('Invalid email or password')
-      } else {
-        router.push('/dashboard')
-        router.refresh()
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to create account')
+        return
       }
+
+      // Registration successful - redirect to login
+      router.push('/login?registered=true')
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -50,15 +83,16 @@ export function LoginForm() {
       )}
 
       <div className="space-y-1.5">
-        <Label htmlFor="email" className="text-sm font-medium text-foreground font-bold">
-          Email Address
+        <Label htmlFor="name" className="text-sm font-bold text-foreground">
+          Full Name
         </Label>
         <Input
-          id="email"
-          type="email"
-          placeholder="name@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          id="name"
+          name="name"
+          type="text"
+          placeholder="John Doe"
+          value={formData.name}
+          onChange={handleChange}
           required
           disabled={isLoading}
           className="h-12 rounded-xl border-2"
@@ -66,21 +100,34 @@ export function LoginForm() {
       </div>
 
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password" className="text-sm font-medium text-foreground font-bold">
-            Password
-          </Label>
-          <a href="#" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">
-            Forgot password?
-          </a>
-        </div>
+        <Label htmlFor="email" className="text-sm font-bold text-foreground">
+          Email Address
+        </Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="name@example.com"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          disabled={isLoading}
+          className="h-12 rounded-xl border-2"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="password" className="text-sm font-bold text-foreground">
+          Password
+        </Label>
         <div className="relative">
           <Input
             id="password"
+            name="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Create a strong password"
+            value={formData.password}
+            onChange={handleChange}
             required
             disabled={isLoading}
             className="h-12 rounded-xl border-2 pr-10"
@@ -100,15 +147,47 @@ export function LoginForm() {
         </div>
       </div>
 
+      <div className="space-y-1.5">
+        <Label htmlFor="confirmPassword" className="text-sm font-bold text-foreground">
+          Confirm Password
+        </Label>
+        <div className="relative">
+          <Input
+            id="confirmPassword"
+            name="confirmPassword"
+            type={showConfirmPassword ? 'text' : 'password'}
+            placeholder="Re-enter your password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            disabled={isLoading}
+            className="h-12 rounded-xl border-2 pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            disabled={isLoading}
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-2">
           <input
             type="checkbox"
-            id="remember"
-            className="h-4 w-4 rounded border-2 border-border text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            id="terms"
+            required
+            className="h-4 w-4 rounded border-2 border-border text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 mt-0.5"
           />
-          <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
-            Remember me
+          <Label htmlFor="terms" className="text-sm font-bold text-muted-foreground cursor-pointer">
+            I agree to the Terms & Privacy Policy
           </Label>
         </div>
       </div>
@@ -121,10 +200,10 @@ export function LoginForm() {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Signing in...
+            Creating account...
           </>
         ) : (
-          'Sign In'
+          'Create Account'
         )}
       </Button>
 

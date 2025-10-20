@@ -2,15 +2,15 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import { LoginForm } from '@/components/forms/login-form'
+import { RegisterForm } from '@/components/forms/register-form'
 import { BookOpen, Star, Sparkles } from 'lucide-react'
 
-export const metadata: Metadata = {
-  title: 'Login - LMS',
-  description: 'Login to your account',
+export const metadata = {
+  title: 'Register - LMS',
+  description: 'Create your account',
 }
 
-export default async function LoginPage() {
+export default async function RegisterPage() {
   const session = await auth()
   
   // If already logged in, redirect to dashboard
@@ -52,27 +52,23 @@ export default async function LoginPage() {
 
             {/* Student Image */}
             <div className="relative z-10 flex items-center justify-center">
-              <div className="relative h-[800px] w-[10000px] flex items-center justify-center">
-              <img 
-                src="/home/Untitled design (2).png" 
-                alt="Learning Platform Student" 
-                className="h-full w-full object-contain"
-              />
+              <div className="relative h-[750px] w-[5000px] flex items-center justify-center">
+                <img 
+                  src="/home/Untitled design (3).png" 
+                  alt="Join Learning Platform" 
+                  className="h-full w-full object-contain"
+                />
               </div>
             </div>
-
-            {/* Enrollment Badge - Bottom Right */}
-            
+           
           </div>
 
-          {/* Carousel Dots */}
-         
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
+      {/* Right Side - Register Form */}
       <div className="flex w-full lg:w-1/2 items-center justify-center px-6 py-12 sm:px-12">
-        <div className="w-full max-w-md space-y-5">
+        <div className="w-full max-w-md space-y-3">
           {/* Mobile Logo */}
           <div className="flex lg:hidden items-center justify-center gap-3 mb-8">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
@@ -82,57 +78,57 @@ export default async function LoginPage() {
           </div>
 
           {/* Header */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <h2 className="text-3xl font-bold tracking-tight text-foreground">
-              Sign In
+              Create Account
             </h2>
-            <p className="text-base text-muted-foreground">
-              Enter your credentials to access your account
+            <p className="text-sm text-muted-foreground">
+              Join thousands of learners and start your journey today
             </p>
           </div>
 
-          {/* Login Form */}
-          <div className="mt-6">
-            <LoginForm />
+          {/* Register Form */}
+          <div className="mt-4">
+            <RegisterForm />
           </div>
 
-          {/* Sign Up Link */}
-          <div className="text-center pt-4">
+          {/* Sign In Link */}
+          <div className="text-center pt-2">
             <p className="text-sm text-muted-foreground">
-              Don&apos;t have an account?{' '}
+              Already have an account?{' '}
               <Link
-                href="/register"
+                href="/login"
                 className="font-semibold text-primary hover:text-primary/80 transition-colors"
               >
-                Create Account
+                Sign In
               </Link>
             </p>
           </div>
 
           {/* Divider */}
-          <div className="relative py-4">
+          <div className="relative py-2">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border" />
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-background px-4 text-muted-foreground">
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-background px-3 text-muted-foreground">
                 Quick Access
               </span>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <Link 
               href="/"
-              className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+              className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
             >
               <BookOpen className="h-4 w-4" />
               Home
             </Link>
             <Link 
               href="#courses"
-              className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+              className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
             >
               Browse Courses
             </Link>

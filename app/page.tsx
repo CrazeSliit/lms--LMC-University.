@@ -37,7 +37,7 @@ export default function Home() {
         <Link href="/" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
           Home
         </Link>
-        <Link href="#courses" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+        <Link href="/courses" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
           Courses
         </Link>
         <Link href="#instructors" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -51,7 +51,7 @@ export default function Home() {
         <Link href="/login">
           <Button variant="ghost" className="font-medium">Login</Button>
         </Link>
-        <Link href="/signup">
+        <Link href="/register">
           <Button className="rounded-full px-6 font-medium">Sign Up</Button>
         </Link>
           </div>
@@ -488,7 +488,7 @@ export default function Home() {
                 ★★★★★
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                "This platform transformed my career. The courses are well-structured and the instructors are incredibly knowledgeable."
+                &ldquo;This platform transformed my career. The courses are well-structured and the instructors are incredibly knowledgeable.&rdquo;
               </p>
               <div className="flex items-center gap-3 pt-4">
                 <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-white font-bold">
@@ -505,7 +505,7 @@ export default function Home() {
                 ★★★★★
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                "The flexibility to learn at my own pace while working full-time was exactly what I needed. Highly recommend!"
+                &ldquo;The flexibility to learn at my own pace while working full-time was exactly what I needed. Highly recommend!&rdquo;
               </p>
               <div className="flex items-center gap-3 pt-4">
                 <div className="h-12 w-12 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold">
@@ -522,7 +522,7 @@ export default function Home() {
                 ★★★★★
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                "Excellent course content and great support from the community. I've gained practical skills I use every day."
+                &ldquo;Excellent course content and great support from the community. I&apos;ve gained practical skills I use every day.&rdquo;
               </p>
               <div className="flex items-center gap-3 pt-4">
                 <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
